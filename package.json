@@ -1,0 +1,44 @@
+{
+  "name": "autodrawflowchart",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI 智能绘图工具 — 自然语言生成可编辑的 draw.io 流程图 / 架构图 / 思维导图",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "setup": "node tools/fetch-drawio.mjs && node tools/extract-drawio.mjs",
+    "postinstall": "node -e \"try{require('fs').accessSync('web/public/drawio/index.html');console.log('[setup] vendored draw.io editor present')}catch{console.log('[setup] vendored draw.io editor MISSING - run: npm run setup')}\"",
+
+    "dev": "npm run build && node server/dist/index.js",
+    "dev:server": "node server/dist/index.js",
+    "dev:web": "npm run build --workspace web",
+    "dev:vite": "concurrently -n server,web -c cyan,magenta \"npm:dev:server\" \"npm run dev:vite --workspace web\"",
+
+    "build": "npm run build --workspace server && npm run build --workspace web",
+    "build:server": "npm run build --workspace server",
+    "build:web": "npm run build --workspace web",
+    "build:web:vite": "npm run build:vite --workspace web",
+
+    "start": "node server/dist/index.js",
+    "typecheck": "npm run typecheck --workspace server && npm run typecheck --workspace web",
+
+    "test": "node server/test/run.mjs",
+    "test:all": "node server/test/run.mjs --all",
+    "smoke": "node tools/smoke-api.mjs",
+    "e2e": "node tools/e2e.mjs",
+    "verify": "npm run build && npm run test:all && node tools/verify.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "linkedom": "^0.18.13",
+    "playwright": "^1.50.1",
+    "tar": "^7.4.3"
+  }
+}
